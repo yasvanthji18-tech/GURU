@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, Depends, Form
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -8,7 +9,7 @@ router = APIRouter(prefix="/api/rag", tags=["RAG QA"])
 
 class RAGQuery(BaseModel):
     question: str
-    topic_id: int = None
+    topic_id: Optional[int] = None
     top_k: int = 3
 
 @router.post("/ask")

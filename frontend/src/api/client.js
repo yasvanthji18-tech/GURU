@@ -76,11 +76,19 @@ export const api = {
 
   // RAG QA
   async askRAG(question, topicId = null, topK = 3) {
+    const payload = { question, top_k: topK };
+    if (topicId !== null && topicId !== undefined) {
+      payload.topic_id = topicId;
+    }
     const res = await fetch(`${API_BASE}/rag/ask`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question, topic_id: topicId, top_k: topK })
+      body: JSON.stringify(payload)
     });
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.detail || `Server status ${res.status}: Failed to retrieve answer`);
+    }
     return res.json();
   },
 

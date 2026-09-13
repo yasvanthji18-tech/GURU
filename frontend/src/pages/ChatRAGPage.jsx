@@ -42,7 +42,7 @@ export default function ChatRAGPage() {
       console.error(e);
       setMessages(prev => [...prev, {
         sender: 'guru',
-        text: "Error retrieving grounded answer from knowledge base.",
+        text: e.message || "Error retrieving grounded answer from knowledge base. Please ensure the backend server is running.",
         sources: []
       }]);
     } finally {
