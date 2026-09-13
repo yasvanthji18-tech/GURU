@@ -49,27 +49,38 @@ class RetrievalRAGAgent:
         full_context = "\n\n".join(context_passages)
 
         # 3. Generate grounded answer via FLAN-T5 LLM or context synthesis
-        flan_gen = model_loader.get_text_generator()
         synthesized_answer = None
 
-        if flan_gen:
-            try:
+        # Check if local text generator is cached and available
+        try:
+            flan_gen = model_loader.get_text_generator()
+            if flan_gen:
                 prompt = f"Answer the student's question based strictly on this context: {full_context[:600]}\nQuestion: {question}\nAnswer:"
                 res = flan_gen(prompt, max_length=150)
                 if res and isinstance(res, list) and 'generated_text' in res[0]:
                     ans = res[0]['generated_text'].strip()
                     if len(ans) > 15:
                         synthesized_answer = ans
-            except Exception as e:
-                logger.warning(f"FLAN-T5 QA synthesis error: {e}")
+        except Exception as e:
+            logger.warning(f"FLAN-T5 QA synthesis warning: {e}")
 
-        # Grounded fallback synthesizer using retrieved chunks directly
+        # High-quality grounded fallback synthesizer using retrieved knowledge chunks
         if not synthesized_answer:
-            primary_chunk = similar_chunks[0]['text']
-            synthesized_answer = (
-                f"Based on your ingested materials ({sources[0]['title']}): {primary_chunk} "
-                f"This directly addresses '{question}'."
-            )
+            primary_title = sources[0]['title']
+            primary_chunk = similar_chunks[0]['text'].strip()
+            
+            if len(similar_chunks) > 1:
+                secondary_chunk = similar_chunks[1]['text'].strip()
+                synthesized_answer = (
+                    f"Based on your study notes ('{primary_title}'):\n\n"
+                    f"• {primary_chunk}\n\n"
+                    f"Additionally ({sources[1]['title']}): {secondary_chunk}"
+                )
+            else:
+                synthesized_answer = (
+                    f"Based on your study notes ('{primary_title}'):\n\n"
+                    f"{primary_chunk}"
+                )
 
         return {
             "question": question,
