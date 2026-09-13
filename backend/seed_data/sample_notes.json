@@ -1,0 +1,20 @@
+[
+  {
+    "topic_name": "Machine Learning & Neural Networks",
+    "exam_weight": 2.8,
+    "title": "Deep Learning Fundamentals & Backpropagation",
+    "text": "Neural networks are computational models inspired by biological brain structure. Backpropagation is the core algorithm used to train artificial neural networks by calculating the gradient of the loss function with respect to each weight using the chain rule. Optimization techniques like Stochastic Gradient Descent (SGD) and Adam update weights iteratively to minimize loss. Overfitting occurs when a model memorizes training noise instead of generalizing; regularization methods such as Dropout, L2 weight decay, and early stopping prevent overfitting."
+  },
+  {
+    "topic_name": "Database Indexing & Query Tuning",
+    "exam_weight": 2.2,
+    "title": "B-Tree vs Hash Indexes & Execution Plans",
+    "text": "Database indexing drastically accelerates data retrieval operations by creating auxiliary search structures. B-Tree indexes maintain sorted order and support range queries (BETWEEN, <, >), whereas Hash indexes offer O(1) key lookups but fail on range scans. Database query optimizers evaluate table statistics to generate cost-based execution plans. High index cardinalities improve selectivity, but excessive indexes slow down INSERT, UPDATE, and DELETE operations due to index reconstruction overhead."
+  },
+  {
+    "topic_name": "Operating Systems Concurrency",
+    "exam_weight": 1.9,
+    "title": "Mutex Locks, Semaphores & Deadlock Avoidance",
+    "text": "Concurrency allows multiple threads of execution to run concurrently on modern multi-core processors. A race condition occurs when concurrent threads access shared memory without proper synchronization. Mutexes (Mutual Exclusion locks) and Counting Semaphores ensure thread-safe critical section execution. Deadlock is a state where two or more processes are blocked forever, each waiting for a resource held by another. Coffman conditions for deadlock are: Mutual Exclusion, Hold and Wait, No Preemption, and Circular Wait."
+  }
+]
