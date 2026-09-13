@@ -1,10 +1,43 @@
 # GURU — Autonomous Agentic AI Study Companion
 
-**GURU** is an agentic, multimodal AI-powered study companion that transforms raw student learning materials (lecture notes, PDF textbooks, scanned image pages, audio voice notes) into a personalized, adaptive study system.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![React](https://img.shields.io/badge/React-18.0-61DAFB?logo=react&logoColor=black)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-5.0-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![ChromaDB](https://img.shields.io/badge/Vector%20DB-ChromaDB-FF6F61)](https://www.trychroma.com/)
+
+**GURU** is an autonomous multi-agent AI study system that transforms raw learning materials (lecture notes, PDFs, textbook images, audio voice notes) into a personalized, interactive study experience with RAG tutoring, 3D flashcards, automated quizzes, and predictive study scheduling.
 
 ---
 
-## Core Architecture: 5 Cooperating Agents
+## 🌟 Key Features
+
+1. **Multimodal Ingestion Hub**:
+   - Ingest plain text notes, PDF documents, scanned page images (OCR via Tesseract), and voice notes (Whisper STT).
+   - Smart chunking with token overlap for optimal retrieval accuracy.
+
+2. **Concept Explorer & 3D Flashcard Engine**:
+   - Auto-generates structured flashcards and concept summaries from ingested notes.
+   - Interactive 3D flip card UI with confidence ratings (**Easy ⚡**, **Medium 🤔**, **Hard 😓**).
+   - Visual concept hierarchy map viewer.
+
+3. **Ask GURU (RAG Tutor Chat)**:
+   - Retrieval-Augmented Generation (RAG) assistant grounded in your study materials.
+   - Transparent source attribution with exact material citations and relevance scores.
+
+4. **Quiz & Self-Assessment Center**:
+   - Automatically generates multiple-choice quizzes targeted at specific study materials.
+   - Instant scoring with explanations and historical attempt tracking.
+
+5. **Predictive & Agentic Study Planner**:
+   - Weakness calculation formula evaluating accuracy, exam weights, and recency:
+     $$\text{WeaknessScore} = (1.0 - \text{Accuracy}) \times 4.5 + \text{ExamWeight} \times 3.5 + \text{RecencyFactor} \times 2.0$$
+   - Automatically generates time-boxed daily study schedules based on your target study hours and exam deadlines.
+
+---
+
+## 🏗️ Multi-Agent Architecture
 
 ```mermaid
 graph TD
@@ -25,78 +58,106 @@ graph TD
 
         D -->|Scores & Attempt Metrics| DB
         DB -->|Historical Accuracy & Recency| E
-        E -->|Time-Boxed Adaptive Study Schedule| Dashboard[React Dashboard]
+        E -->|Time-Boxed Adaptive Schedule| Dashboard[React Dashboard UI]
     end
 ```
 
 ---
 
-## Hugging Face Models Used
+## 🤖 AI & Hugging Face Models
 
-| Stage / Agent | Hugging Face Model | Local Inference / Pipeline | Purpose |
+| Component / Task | Model / Library | Engine / Pipeline | Purpose |
 |---|---|---|---|
-| **Embeddings (RAG Layer)** | `sentence-transformers/all-MiniLM-L6-v2` | Local `SentenceTransformer()` | Converts text chunks into 384-dim dense vectors for semantic similarity search in ChromaDB |
-| **Summarization Agent** | `sshleifer/distilbart-cnn-12-6` / `facebook/bart-large-cnn` | Local HF `pipeline("summarization")` | Synthesizes long notes into concise executive summaries and bullet points |
-| **Flashcard & QA Agent** | `google/flan-t5-base` | Local HF `pipeline("text2text-generation")` | Instruction-tuned model for extracting structured Q&A flashcard pairs and grounded QA |
-| **Speech-to-Text Ingestion** | `openai/whisper-tiny` / `openai/whisper-small` | Local HF `pipeline("speech-recognition")` | Transcribes student audio voice recordings into plain text chunks |
-| **OCR Textbook Ingestion** | `pytesseract` / PIL OCR reader | Local `pytesseract` OCR | Extracts text from scanned textbook page images |
+| **RAG Embeddings** | `sentence-transformers/all-MiniLM-L6-v2` | SentenceTransformers | Dense 384-dimensional vector embeddings stored in ChromaDB |
+| **Summarization** | `sshleifer/distilbart-cnn-12-6` / `facebook/bart-large-cnn` | HuggingFace Transformers | Concise executive summaries & key concept extraction |
+| **Flashcard Generator** | `google/flan-t5-base` | Text2Text Pipeline | Extracting structured question-and-answer pairs |
+| **Audio Ingestion** | `openai/whisper-tiny` / `openai/whisper-small` | Speech-Recognition | Transcribing recorded lectures & voice notes into text |
+| **OCR Ingestion** | `pytesseract` / Pillow | Tesseract Engine | Extracting text from scanned notes & textbook page images |
 
 ---
 
-## System Features & Capabilities
+## 📁 Repository Structure
 
-1. **Multimodal Ingestion Hub**:
-   - Plain text notes, PDF uploads, textbook page OCR, and Whisper voice note audio queries.
-   - Standardized character/sentence chunking with token overlap.
-
-2. **Concept Explorer & 3D Flashcard Deck**:
-   - Interactive 3D flip-cards with self-assessment confidence ratings (Easy ⚡, Medium 🤔, Hard 😓).
-   - Dynamic visual concept hierarchy map viewer.
-
-3. **Ask GURU (RAG Tutor Chat)**:
-   - Natural language Q&A interface grounded in ingested materials.
-   - Provides exact source citations (material title, chunk snippet, relevance score) to prevent hallucinations.
-
-4. **Quiz & Progress Station**:
-   - Auto-generates multiple choice quizzes per topic.
-   - Evaluates submissions with instant explanations and logs history to SQLite.
-
-5. **Predictive & Agentic Planner**:
-   - Explainable scoring algorithm calculating topic weakness:
-     $$\text{WeaknessScore} = (1.0 - \text{Accuracy}) \times 4.5 + \text{ExamWeight} \times 3.5 + \text{RecencyFactor} \times 2.0$$
-   - Allocates time-boxed daily study schedules based on exam countdown days and student's daily hour target.
+```
+GURU/
+├── backend/
+│   ├── app/
+│   │   ├── agents/          # Multi-agent engines (Ingestion, Summarization, RAG, Quiz, Planner)
+│   │   ├── database/        # SQLite database connection & ORM models
+│   │   ├── routers/         # FastAPI API endpoints
+│   │   ├── services/        # Vector store & Model loader services
+│   │   ├── config.py        # System configuration & environment settings
+│   │   └── main.py          # FastAPI application entrypoint
+│   ├── seed_data/           # Sample CS & AI study materials for quick-start demo
+│   ├── tests/               # Backend API unit tests
+│   └── requirements.txt     # Python dependencies
+├── frontend/
+│   ├── public/              # Static assets and icons
+│   ├── src/
+│   │   ├── api/             # Frontend API client
+│   │   ├── components/      # Reusable React components (Flashcards, Concept Map, Navbar, etc.)
+│   │   ├── pages/           # Application views (Dashboard, RAG Chat, Quiz, Planner, etc.)
+│   │   ├── App.jsx          # Main React App router & layout
+│   │   └── index.css        # Styling & design system tokens
+│   ├── package.json         # Frontend Node.js dependencies
+│   └── vite.config.js       # Vite development configuration
+└── README.md
+```
 
 ---
 
-## Quick Start & Setup Instructions
+## 🚀 Quick Start Guide
 
 ### Prerequisites
-- Node.js (v18+)
-- Python (3.10+)
+- **Node.js** (v18 or higher)
+- **Python** (v3.10 or higher)
 
-### 1. Run Backend FastAPI Server
+### 1. Set Up & Launch Backend Server
 ```bash
+# Navigate to backend directory
 cd backend
-python -m pip install -r requirements.txt
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
-```
 
-### 2. Run Frontend Dashboard
+# Create and activate virtual environment (optional but recommended)
+python -m venv venv
+# On Windows:
+.\venv\Scripts\activate
+# On Linux/macOS:
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Start the FastAPI backend server
+python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+> The API documentation will be available interactively at `http://127.0.0.1:8000/docs`.
+
+### 2. Set Up & Launch Frontend Client
 ```bash
+# Open a new terminal tab and navigate to frontend directory
 cd frontend
+
+# Install dependencies
 npm install
+
+# Start Vite development server
 npm run dev
 ```
-
-Open browser to `http://localhost:5173`.
+> Open your browser to `http://localhost:5173`.
 
 ---
 
-## Live Demo Walkthrough Steps
+## 💡 How to Use (Live Demo Workflow)
 
-1. Click **"Load Seed Materials"** in the top navbar to instantly load CS/AI sample notes (Deep Learning, Database Indexing, Concurrency).
-2. Go to **Ingestion Hub** to test plain text, PDF, or image OCR text parsing.
-3. Open **Flashcards & Concept Map** to flip 3D study cards and inspect the visual concept node hierarchy.
-4. Open **Ask GURU (RAG Chat)** and click a quick prompt like *"What is the function of backpropagation in deep learning?"* to see grounded answers with source citations.
-5. Take a quiz in **Quiz Center** and view instant score explanations.
-6. Open **Adaptive Planner** to see weak topics ranked and daily study minutes automatically allocated.
+1. Click **"Load Seed Materials"** in the navigation bar to immediately populate the workspace with sample CS & AI study notes.
+2. Go to **Ingestion Hub** to upload your own custom PDFs, notes, or image pages.
+3. Open **Flashcards & Concept Map** to test your knowledge with 3D flip-cards and review visual node structures.
+4. Launch **Ask GURU (RAG Chat)** to ask questions and receive context-grounded answers with direct citations.
+5. Take auto-generated quizzes in **Quiz Center** to track your mastery.
+6. Check **Adaptive Planner** to see your personal study schedule generated based on identified topic weaknesses.
+
+---
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
